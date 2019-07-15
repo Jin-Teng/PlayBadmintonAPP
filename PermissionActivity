@@ -1,0 +1,50 @@
+package android.alston.com.android318;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.TextView;
+
+import static android.Manifest.permission.*;
+
+public class PermissionActivity extends AppCompatActivity {
+    private TextView textView;
+    private final int REQUEST_CONTACTS = 100;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_permission);
+        int permission = ActivityCompat.checkSelfPermission(this, READ_CONTACTS);
+        textView = (TextView)findViewById(R.id.perTextView);
+        if(permission == PackageManager.PERMISSION_GRANTED) {
+            read_contact();
+        }else {
+            String[] request_permission = new String[]{READ_CONTACTS,WRITE_CONTACTS};
+            ActivityCompat.requestPermissions(this,request_permission, REQUEST_CONTACTS);
+        }
+    }
+    private void read_contact(){
+        textView.setText("GRANTED");
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_CONTACTS:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    read_contact();
+                else
+                    new AlertDialog.Builder(this)
+                            .setMessage("拜託請給我權限")
+                            .setPositiveButton("拜託啦～～",null)
+                            .show();
+                break;
+            default:
+                break;
+        }
+    }
+}
